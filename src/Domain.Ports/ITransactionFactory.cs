@@ -4,5 +4,5 @@ namespace Domain.Ports;
 
 public interface ITransactionFactory
 {
-  IDisposable Begin(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
+  Task<IDisposable> Begin(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
 }

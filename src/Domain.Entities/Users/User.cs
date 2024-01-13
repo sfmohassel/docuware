@@ -6,27 +6,36 @@ namespace Domain.Entities.Users;
 
 public class User : Entity
 {
-  public User(ISet<Role> roles, string email, string password)
+  public User(string email, string password)
   {
-    Roles = roles;
     Email = email;
     Password = password;
 
     Validate();
   }
 
-  public ISet<Role> Roles { get; private set; }
+  public IList<UserRole> UserRoles { get; private set; }
   public string Email { get; private set; }
   public string Password { get; private set; }
 
-  public void SetRoles(ISet<Role> roles)
+  public void SetRoles(IEnumerable<Role> roles)
   {
-    Roles = roles;
+    UserRoles = roles.Select(role => new UserRole
+    {
+      Role = role,
+      User = this,
+      UserId = Id
+    }).ToList();
+  }
+
+  public ISet<Role> GetRoles()
+  {
+    return UserRoles.Select(userRole => userRole.Role).ToHashSet();
   }
 
   public bool HasAccess(Role role)
   {
-    return Roles.Contains(role);
+    return UserRoles.Any(userRole => userRole.Role == role);
   }
 
   private void Validate()

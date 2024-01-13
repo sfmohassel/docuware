@@ -6,15 +6,16 @@ namespace Domain.Ports.Events.Repositories;
 
 public interface IEventRepository
 {
-  IEnumerable<Event> FindPaginated(PagedRequest pagedRequest);
-  Event? FindByPublicId(Guid publicId);
+  Task<IEnumerable<Event>> FindPaginated(PagedRequest pagedRequest);
+  Task<Event?> FindByPublicId(Guid publicId);
 
-  Event GetByPublicId(Guid publicId)
+  async Task<Event> GetByPublicId(Guid publicId)
   {
-    return FindByPublicId(publicId) ?? throw new EventNotFoundException();
+    var @event = await FindByPublicId(publicId);
+    return @event ?? throw new EventNotFoundException();
   }
 
-  bool AnyUnfinishedEventExistsByName(string name);
+  Task<bool> AnyUnfinishedEventExistsByName(string name);
 
-  Event save(Event @event);
+  Task<Event> Save(Event @event);
 }

@@ -12,6 +12,11 @@ public abstract class Entity
     PublicId = Guid.NewGuid();
   }
 
+  public bool IsNew()
+  {
+    return Id < 1;
+  }
+
   private void Validate()
   {
     if (Id < 0)

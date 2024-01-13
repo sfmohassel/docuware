@@ -9,7 +9,7 @@ public static class UserMapper
     return new API.Users.Models.User
     {
       Email = user.Email,
-      Roles = user.Roles.Select(RoleMapper.Map).ToList(),
+      Roles = user.GetRoles().Select(RoleMapper.Map).ToList(),
       UserId = user.PublicId
     };
   }

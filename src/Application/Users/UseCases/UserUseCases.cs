@@ -10,17 +10,17 @@ public class UserUseCases(
   IUserRepository userRepository,
   ITransactionFactory transactionFactory)
 {
-  public SetRolesOutput SetRoles(Guid userId, SetRolesInput input)
+  public async Task<SetRolesOutput> SetRoles(Guid userId, SetRolesInput input)
   {
     User user;
-    using (transactionFactory.Begin())
+    using (await transactionFactory.Begin())
     {
-      user = userRepository.GetByPublicId(userId);
+      user = await userRepository.GetByPublicId(userId);
 
       var roles = input.Roles.Select(RoleMapper.Map).ToHashSet();
       user.SetRoles(roles);
 
-      user = userRepository.save(user);
+      user = await userRepository.Save(user);
     }
 
     return new SetRolesOutput

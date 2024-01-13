@@ -5,21 +5,21 @@ namespace Domain.Ports.Users.Repositories;
 
 public interface IUserRepository
 {
-  User? FindByEmail(string email);
+  Task<User?> FindByEmail(string email);
 
-  User GetByEmail(string email)
+  async Task<User> GetByEmail(string email)
   {
-    var user = FindByEmail(email);
+    var user = await FindByEmail(email);
     return user ?? throw new UserNotFoundException();
   }
 
-  User? FindByPublicId(Guid publicId);
+  Task<User?> FindByPublicId(Guid publicId);
 
-  User GetByPublicId(Guid publicId)
+  async Task<User> GetByPublicId(Guid publicId)
   {
-    var user = FindByPublicId(publicId);
+    var user = await FindByPublicId(publicId);
     return user ?? throw new UserNotFoundException();
   }
 
-  User save(User user);
+  Task<User> Save(User user);
 }

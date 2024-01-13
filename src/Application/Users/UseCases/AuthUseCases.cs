@@ -11,23 +11,24 @@ public class AuthUseCases(
   IUserRepository userRepository,
   IPasswordHasher passwordHasher)
 {
-  public LoginOutput Login(LoginInput input)
+  public async Task<LoginOutput> Login(LoginInput input)
   {
-    var user = userRepository.GetByEmail(input.Email);
+    var user = await userRepository.GetByEmail(input.Email);
 
-    var isPasswordValid = passwordHasher.Verify(user.Password, input.Password);
+    var isPasswordValid = await passwordHasher.Verify(user.Password, input.Password);
     if (!isPasswordValid) throw new UserNotFoundException();
 
     return new LoginOutput
     {
-      Token = user.PublicId.ToString()
+      Token = user.PublicId.ToString(),
+      Roles = user.GetRoles().Select(RoleMapper.Map).ToList()
     };
   }
 
-  public AuthenticateOutput Authenticate(AuthenticateInput input)
+  public async Task<AuthenticateOutput> Authenticate(AuthenticateInput input)
   {
     if (!Guid.TryParse(input.Token, out var publicId)) throw new InvalidTokenException();
-    var user = userRepository.GetByPublicId(publicId);
+    var user = await userRepository.GetByPublicId(publicId);
     return new AuthenticateOutput
     {
       User = UserMapper.Map(user)
