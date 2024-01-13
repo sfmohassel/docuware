@@ -1,5 +1,6 @@
 using Application.Events.UseCases;
 using Application.Users.UseCases;
+using Domain.Entities.Users;
 using Domain.Ports;
 using Domain.Ports.Events.Repositories;
 using Domain.Ports.Users;
@@ -18,6 +19,7 @@ var services = builder.Services;
 services.AddEndpointsApiExplorer().AddSwaggerGen();
 
 var databaseConfig = builder.Configuration.GetSection("Database").Get<DatabaseConfig>()!;
+var adminConfig = builder.Configuration.GetSection("Admin").Get<AdminConfig>()!;
 
 services.AddDbContext<EFContext>(o =>
 {
@@ -39,7 +41,6 @@ services
   .AddSingleton<IClock, Clock>()
   .AddSingleton<IPasswordHasher, PasswordHasher>()
   .AddSingleton<ITransactionFactory, TransactionFactory>()
-  .AddSingleton(databaseConfig)
   .AddSingleton<UserService>()
   .AddSingleton<AuthUseCases>()
   .AddSingleton<UserUseCases>()
@@ -57,6 +58,16 @@ if (app.Environment.IsDevelopment())
   app.UseSwaggerUI();
 }
 
+app.UseHealthChecks("/");
 app.MapControllers();
+
+var userRepository = app.Services.GetRequiredService<IUserRepository>();
+var passwordHasher = app.Services.GetRequiredService<IPasswordHasher>();
+var admin = await userRepository.FindByEmail(adminConfig.Email);
+if (admin == null)
+{
+  admin = new User(adminConfig.Email, await passwordHasher.Hash(adminConfig.Password));
+  await userRepository.Save(admin);
+}
 
 app.Run();
