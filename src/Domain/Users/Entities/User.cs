@@ -1,4 +1,5 @@
 using Common;
+using Domain.Events.Exceptions;
 using Domain.Users.Enums;
 using Domain.Users.Exceptions;
 
@@ -40,6 +41,7 @@ public class User : Entity
   private void Validate()
   {
     if (string.IsNullOrWhiteSpace(Email)) throw new InvalidEmailException();
+    if (string.IsNullOrWhiteSpace(Password)) throw new InvalidPasswordException();
   }
 
   public class UserRole

@@ -2,14 +2,15 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Application.API.Users.Models;
+using Domain.Ports;
 using Infra.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Host.Security;
 
-public static class JWT
+public class JWT(JwtConfig jwtConfig, IClock clock)
 {
-  public static string Generate(User user, JwtConfig jwtConfig)
+  public string Generate(User user)
   {
     var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Key));
     var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -23,21 +24,21 @@ public static class JWT
 
     var token = new JwtSecurityToken(jwtConfig.Issuer,
       jwtConfig.Issuer,
-      expires: DateTime.Now.AddDays(1),
+      expires: clock.Now().AddDays(1),
       signingCredentials: credentials,
       claims: claims);
 
     return new JwtSecurityTokenHandler().WriteToken(token);
   }
 
-  public static Guid? Parse(string token)
+  public Guid? Parse(string token)
   {
     try
     {
       var x = new JwtSecurityTokenHandler().ReadJwtToken(token);
       return Guid.Parse(x.Subject);
     }
-    catch (Exception e)
+    catch
     {
       return null;
     }

@@ -26,5 +26,9 @@ public class Address
   private void Validate()
   {
     if (Country.Length != 2) throw new InvalidCountryException();
+
+    if (string.IsNullOrWhiteSpace(City)) throw new InvalidCityException();
+
+    if (string.IsNullOrWhiteSpace(PostalCode)) throw new InvalidPostalCodeException();
   }
 }

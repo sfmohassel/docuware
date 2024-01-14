@@ -9,14 +9,14 @@ public class AuthMiddleware(RequestDelegate next)
 {
   private const string PREFIX = "Bearer ";
 
-  public async Task InvokeAsync(HttpContext context, UserUseCases userUseCases)
+  public async Task InvokeAsync(HttpContext context, UserUseCases userUseCases, JWT jwt)
   {
     var authorizationHeader = context.Request.Headers.Authorization.ToString();
 
     if (authorizationHeader.StartsWith(PREFIX))
     {
       var token = authorizationHeader[PREFIX.Length..];
-      var userId = JWT.Parse(token);
+      var userId = jwt.Parse(token);
       if (userId.HasValue)
       {
         var user = await userUseCases.GetById(userId.Value);

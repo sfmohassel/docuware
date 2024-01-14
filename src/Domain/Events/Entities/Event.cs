@@ -40,5 +40,7 @@ public class Event : Entity
   private void Validate()
   {
     if (string.IsNullOrWhiteSpace(Name)) throw new InvalidNameException();
+
+    if (Start.Ticks >= End.Ticks) throw new InvalidDateRangeException();
   }
 }

@@ -1,6 +1,5 @@
 using Common;
 using Domain.Events.Exceptions;
-using Domain.Users.Exceptions;
 
 namespace Domain.Events.Entities;
 
@@ -31,10 +30,6 @@ public class Registration : Entity
   private void Validate()
   {
     if (string.IsNullOrWhiteSpace(Name)) throw new InvalidRegistrationNameException();
-
-    if (Phone != null && string.IsNullOrWhiteSpace(Phone)) throw new InvalidPhoneException();
-
-    if (Email != null && string.IsNullOrWhiteSpace(Email)) throw new InvalidEmailException();
 
     if (string.IsNullOrWhiteSpace(Phone) && string.IsNullOrWhiteSpace(Email))
     {

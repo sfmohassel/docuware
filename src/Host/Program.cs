@@ -77,6 +77,7 @@ services.AddDbContext<EFContext>(o => { o.UseNpgsql(connectionStringBuilder.Conn
 services
   .AddScoped<IAuthorizationHandler, RoleAccessHandler>()
   .AddSingleton(jwtConfig)
+  .AddSingleton<JWT>()
   .AddSingleton<IClock, Clock>()
   .AddSingleton<IPasswordHasher, PasswordHasher>()
   .AddScoped<ITransactionFactory, TransactionFactory>()
