@@ -45,8 +45,14 @@ Import API as a collection in Postman using this link
 
 ## Ways to improve
 
+- Add logging infrastructure and log instead of writing to console ;)
+- Possibly localize error messages if app is multi-lingual. You can use either `libc.translation` nuget package or use `resx` files.
 - Use AutoMapper for mapping entities
 - Add e2e tests for REST API
 - Add a UI 😀
 - Test with real database using TestContainers
+- Validate inputs using FluentValidation (be careful with System.Text.Json because it will try to deserialize AbstractValidator<> properties...)
+- Add HTML sanitization to prevent XSS attacks: https://owasp.org/www-community/attacks/xss/
+- Pool database connections
+- Use in-memory or a distributed caching mechanism
 

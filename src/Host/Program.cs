@@ -99,6 +99,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHealthChecks("/");
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseMiddleware<AuthMiddleware>();
 app.UseAuthorization();

@@ -2,6 +2,6 @@ using Common.Exceptions;
 
 namespace Domain.Events.Exceptions;
 
-public class InvalidNameException() : DocuWareException(Cause.InvalidData)
+public class InvalidNameException() : DocuWareException(Cause.InvalidData, "Invalid name")
 {
 }

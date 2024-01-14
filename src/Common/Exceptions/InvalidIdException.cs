@@ -1,3 +1,3 @@
 namespace Common.Exceptions;
 
-public class InvalidIdException() : DocuWareException(Cause.InvalidData);
+public class InvalidIdException() : DocuWareException(Cause.InvalidData, "Invalid ID");

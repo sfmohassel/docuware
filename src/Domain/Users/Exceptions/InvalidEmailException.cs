@@ -2,6 +2,6 @@ using Common.Exceptions;
 
 namespace Domain.Users.Exceptions;
 
-public class InvalidEmailException() : DocuWareException(Cause.InvalidData)
+public class InvalidEmailException() : DocuWareException(Cause.InvalidData, "Invalid Email address")
 {
 }

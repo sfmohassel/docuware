@@ -2,6 +2,6 @@ using Common.Exceptions;
 
 namespace Domain.Users.Exceptions;
 
-public class UserHasNoAccessException() : DocuWareException(Cause.NoAccess)
+public class UserHasNoAccessException() : DocuWareException(Cause.NoAccess, "Access Denied")
 {
 }

@@ -17,7 +17,9 @@ public static class AddressMapper
 
   public static Domain.Events.ValueObjects.Address Map(Address address)
   {
-    return new Domain.Events.ValueObjects.Address(address.Country,
-      address.City, address.PostalCode, address.StreetAndHouse);
+    return address.IsEmpty()
+      ? new Domain.Events.ValueObjects.Address()
+      : new Domain.Events.ValueObjects.Address(address.Country,
+        address.City, address.PostalCode, address.StreetAndHouse);
   }
 }
