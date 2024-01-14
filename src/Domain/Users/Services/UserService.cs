@@ -5,7 +5,7 @@ using Domain.Users.Repositories;
 
 namespace Domain.Users.Services;
 
-public class UserService(IUserRepository userRepository)
+public class UserService(IUserRepository userRepository) : IUserService
 {
   public async Task<User> EnsureAccessTo(Guid userId, Role role)
   {

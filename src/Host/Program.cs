@@ -81,7 +81,7 @@ services
   .AddSingleton<IClock, Clock>()
   .AddSingleton<IPasswordHasher, PasswordHasher>()
   .AddScoped<ITransactionFactory, TransactionFactory>()
-  .AddScoped<UserService>()
+  .AddScoped<IUserService, UserService>()
   .AddScoped<AuthUseCases>()
   .AddScoped<UserUseCases>()
   .AddScoped<EventUseCases>()

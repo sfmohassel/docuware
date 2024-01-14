@@ -8,10 +8,10 @@ public static class AddressMapper
   {
     return new Address
     {
-      Country = address.Country,
-      PostalCode = address.PostalCode,
+      Country = address.Country ?? "",
+      PostalCode = address.PostalCode ?? "",
       StreetAndHouse = address.StreetAndHouse ?? "",
-      City = address.City
+      City = address.City ?? ""
     };
   }
 

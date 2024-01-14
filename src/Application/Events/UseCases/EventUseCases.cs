@@ -13,7 +13,7 @@ public class EventUseCases(
   IEventRepository eventRepository,
   IRegistrationRepository registrationRepository,
   ITransactionFactory transactionFactory,
-  UserService userService)
+  IUserService userService)
 {
   public async Task<CreateEventOutput> Create(Guid executingUserId, CreateEventInput input)
   {

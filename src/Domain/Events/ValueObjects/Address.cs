@@ -18,17 +18,18 @@ public class Address
     Validate();
   }
 
-  public string Country { get; private set; }
-  public string City { get; private set; }
-  public string PostalCode { get; private set; }
+  public string? Country { get; private set; }
+  public string? City { get; private set; }
+  public string? PostalCode { get; private set; }
   public string? StreetAndHouse { get; private set; }
 
   private void Validate()
   {
-    if (Country.Length != 2) throw new InvalidCountryException();
+    if (Country != null && Country.Length != 2) throw new InvalidCountryException();
 
-    if (string.IsNullOrWhiteSpace(City)) throw new InvalidCityException();
+    if (City != null && string.IsNullOrWhiteSpace(City)) throw new InvalidCityException();
 
-    if (string.IsNullOrWhiteSpace(PostalCode)) throw new InvalidPostalCodeException();
+    if (PostalCode != null && string.IsNullOrWhiteSpace(PostalCode))
+      throw new InvalidPostalCodeException();
   }
 }
