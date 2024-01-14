@@ -1,6 +1,5 @@
 using Application.Events.UseCases;
 using Application.Users.UseCases;
-using Domain.Entities.Users;
 using Domain.Ports;
 using Domain.Ports.Events.Repositories;
 using Domain.Ports.Users;
@@ -61,13 +60,7 @@ if (app.Environment.IsDevelopment())
 app.UseHealthChecks("/");
 app.MapControllers();
 
-var userRepository = app.Services.GetRequiredService<IUserRepository>();
-var passwordHasher = app.Services.GetRequiredService<IPasswordHasher>();
-var admin = await userRepository.FindByEmail(adminConfig.Email);
-if (admin == null)
-{
-  admin = new User(adminConfig.Email, await passwordHasher.Hash(adminConfig.Password));
-  await userRepository.Save(admin);
-}
+var userUseCases = app.Services.GetRequiredService<UserUseCases>();
+await userUseCases.SeedAdmin(adminConfig.Email, adminConfig.Password);
 
 app.Run();

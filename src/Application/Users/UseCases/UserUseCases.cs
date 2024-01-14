@@ -1,31 +1,27 @@
-using Application.API.Users.DTO;
-using Application.Users.Mappers;
 using Domain.Entities.Users;
+using Domain.Entities.Users.Enums;
 using Domain.Ports;
+using Domain.Ports.Users;
 using Domain.Ports.Users.Repositories;
 
 namespace Application.Users.UseCases;
 
 public class UserUseCases(
   IUserRepository userRepository,
+  IPasswordHasher passwordHasher,
   ITransactionFactory transactionFactory)
 {
-  public async Task<SetRolesOutput> SetRoles(Guid userId, SetRolesInput input)
+  public async Task SeedAdmin(string email, string password)
   {
-    User user;
     using (await transactionFactory.Begin())
     {
-      user = await userRepository.GetByPublicId(userId);
-
-      var roles = input.Roles.Select(RoleMapper.Map).ToHashSet();
-      user.SetRoles(roles);
-
-      user = await userRepository.Save(user);
+      var admin = await userRepository.FindByEmail(email);
+      if (admin == null)
+      {
+        admin = new User(email, await passwordHasher.Hash(password));
+        admin.SetRoles(new[] { Role.EventCreator });
+        await userRepository.Save(admin);
+      }
     }
-
-    return new SetRolesOutput
-    {
-      User = UserMapper.Map(user)
-    };
   }
 }

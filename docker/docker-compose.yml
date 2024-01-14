@@ -1,0 +1,54 @@
+version: "3.9"
+
+volumes:
+  docuware-pg:
+    name: docuware-pg
+
+
+networks:
+  docuware-network:
+    name: docuware-network
+
+
+services:
+  db:
+    container_name: docuware-postgres
+    build:
+      context: postgres
+      dockerfile: Dockerfile
+    image: docuware-postgres:latest
+    ports:
+      - 13333:5432
+    networks:
+      - docuware-network
+    restart: unless-stopped
+    volumes:
+      - docuware-pg:/var/lib/postgresql/data:rw
+    environment:
+      - PGPORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    profiles:
+      - db
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+  app:
+    container_name: docuware-app
+    build:
+      context: ../src/Host
+      dockerfile: Dockerfile
+    image: docuware-app:latest
+    ports:
+      - 13334:5000
+    networks:
+      - docuware-network
+    profiles:
+      - local
+    env_file:
+      - .env
+    deploy:
+      resources:
+        limits:
+          memory: 512m
