@@ -37,3 +37,16 @@ docker compose --profile db --env-file .env down
 docker volumn rm docuware-pg
 ```
 Note: This is useful in case you want to change database user and password
+
+## How to do manual testing?
+
+Run app locally, then open 'http://localhost:5051/swagger'. In that page locate the Open API json document link and copy it.
+Import API as a collection in Postman using this link
+
+## Ways to improve
+
+- Use AutoMapper for mapping entities
+- Add e2e tests for REST API
+- Add a UI 😀
+- Test with real database using TestContainers
+
