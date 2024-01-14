@@ -4,7 +4,7 @@ namespace Application.Events.Mappers;
 
 public static class AddressMapper
 {
-  public static Address Map(Domain.Entities.Events.ValueObjects.Address address)
+  public static Address Map(Domain.Events.ValueObjects.Address address)
   {
     return new Address
     {
@@ -15,9 +15,9 @@ public static class AddressMapper
     };
   }
 
-  public static Domain.Entities.Events.ValueObjects.Address Map(Address address)
+  public static Domain.Events.ValueObjects.Address Map(Address address)
   {
-    return new Domain.Entities.Events.ValueObjects.Address(address.Country,
+    return new Domain.Events.ValueObjects.Address(address.Country,
       address.City, address.PostalCode, address.StreetAndHouse);
   }
 }

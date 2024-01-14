@@ -1,15 +1,14 @@
-using FluentValidation;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.API.Users.DTO;
 
-public class LoginInput : AbstractValidator<LoginInput>
+public class LoginInput
 {
-  public LoginInput()
-  {
-    RuleFor(a => a.Email).NotNull().EmailAddress();
-    RuleFor(a => a.Password).NotEmpty();
-  }
-
+  [Required]
+  [StringLength(maximumLength: 64)]
   public string Email { get; set; }
+
+  [Required]
+  [StringLength(maximumLength: 72)]
   public string Password { get; set; }
 }

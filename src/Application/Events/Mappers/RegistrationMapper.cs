@@ -4,7 +4,7 @@ namespace Application.Events.Mappers;
 
 public static class RegistrationMapper
 {
-  public static Registration Map(Domain.Entities.Events.Registration registration)
+  public static Registration Map(Domain.Events.Entities.Registration registration)
   {
     return new Registration
     {

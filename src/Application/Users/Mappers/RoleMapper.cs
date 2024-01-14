@@ -1,4 +1,4 @@
-using Domain.Entities.Users.Enums;
+using Domain.Users.Enums;
 
 namespace Application.Users.Mappers;
 

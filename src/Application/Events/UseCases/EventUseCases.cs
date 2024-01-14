@@ -1,11 +1,11 @@
 ﻿using Application.API.Events.DTO;
 using Application.Events.Exceptions;
 using Application.Events.Mappers;
-using Domain.Entities.Events;
-using Domain.Entities.Users.Enums;
+using Domain.Events.Entities;
+using Domain.Events.Repositories;
 using Domain.Ports;
-using Domain.Ports.Events.Repositories;
-using Domain.Ports.Users.Services;
+using Domain.Users.Enums;
+using Domain.Users.Services;
 
 namespace Application.Events.UseCases;
 
@@ -56,9 +56,10 @@ public class EventUseCases(
     };
   }
 
-  public async Task<ListRegistrationsOutput> ListRegistrations(ListRegistrationsInput input)
+  public async Task<ListRegistrationsOutput> ListRegistrations(Guid eventId, ListRegistrationsInput input)
   {
-    var registrations = (await registrationRepository.FindPaginated(input))
+    var ev = eventRepository.GetByPublicId(eventId);
+    var registrations = (await registrationRepository.FindPaginated(ev.Id, input))
       .Select(RegistrationMapper.Map)
       .ToList();
 
@@ -68,13 +69,13 @@ public class EventUseCases(
     };
   }
 
-  public async Task<RegistrationOutput> Register(RegistrationInput input)
+  public async Task<RegistrationOutput> Register(Guid eventId, RegistrationInput input)
   {
     Registration registration;
 
     using (await transactionFactory.Begin())
     {
-      var @event = eventRepository.GetByPublicId(input.EventId);
+      var @event = eventRepository.GetByPublicId(eventId);
 
       if (input.Phone != null)
       {

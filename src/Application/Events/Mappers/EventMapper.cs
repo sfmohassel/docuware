@@ -4,7 +4,7 @@ namespace Application.Events.Mappers;
 
 public static class EventMapper
 {
-  public static Event Map(Domain.Entities.Events.Event @event)
+  public static Event Map(Domain.Events.Entities.Event @event)
   {
     return new Event
     {

@@ -1,29 +1,65 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Application.API.Users.Models;
 using Application.Events.UseCases;
 using Application.Users.UseCases;
+using Domain.Events.Repositories;
 using Domain.Ports;
-using Domain.Ports.Events.Repositories;
-using Domain.Ports.Users;
-using Domain.Ports.Users.Repositories;
-using Domain.Ports.Users.Services;
+using Domain.Users.Ports;
+using Domain.Users.Repositories;
+using Domain.Users.Services;
+using Host.Middlewares;
+using Host.Security;
 using Infra.Adapters;
-using Infra.Adapters.Configuration;
-using Infra.Adapters.Events.Repositories;
-using Infra.Adapters.Users;
-using Infra.Adapters.Users.Repositories;
+using Infra.Configuration;
+using Infra.Events.Repositories;
+using Infra.Users.Adapters;
+using Infra.Users.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 if (builder.Environment.IsDevelopment())
 {
-  builder.Configuration.AddJsonFile("appsettings.Local.json", optional: false, reloadOnChange: true);
+  builder.Configuration.AddJsonFile("appsettings.Local.json", optional: false,
+    reloadOnChange: true);
 }
-var services = builder.Services;
-services.AddEndpointsApiExplorer().AddSwaggerGen().AddHealthChecks();
-services.AddControllers();
 
 var databaseConfig = builder.Configuration.GetSection("Database").Get<DatabaseConfig>()!;
 var adminConfig = builder.Configuration.GetSection("Admin").Get<AdminConfig>()!;
+var jwtConfig = builder.Configuration.GetSection("Jwt").Get<JwtConfig>()!;
+
+
+var services = builder.Services;
+services.AddEndpointsApiExplorer().AddSwaggerGen().AddHealthChecks();
+services.AddHttpContextAccessor().AddControllers()
+  .AddJsonOptions(o =>
+  {
+    o.JsonSerializerOptions.AllowTrailingCommas = true;
+    o.JsonSerializerOptions.IncludeFields = true;
+    o.JsonSerializerOptions.PropertyNameCaseInsensitive = false;
+    o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    o.JsonSerializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
+    o.JsonSerializerOptions.WriteIndented = true;
+    o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+  });
+services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+  .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme);
+
+services.AddAuthorization(o =>
+{
+  o.AddPolicy("Authenticated", policy =>
+  {
+    policy.Requirements.Add(new RoleRequirement());
+  });
+  o.AddPolicy("EventCreator", policy =>
+  {
+    policy.Requirements.Add(new RoleRequirement(Role.EventCreator));
+  });
+});
+
 var connectionStringBuilder = new NpgsqlConnectionStringBuilder
 {
   Username = databaseConfig.User,
@@ -36,12 +72,11 @@ var connectionStringBuilder = new NpgsqlConnectionStringBuilder
   Database = databaseConfig.Name
 };
 
-services.AddDbContext<EFContext>(o =>
-{
-  o.UseNpgsql(connectionStringBuilder.ConnectionString);
-});
+services.AddDbContext<EFContext>(o => { o.UseNpgsql(connectionStringBuilder.ConnectionString); });
 
 services
+  .AddScoped<IAuthorizationHandler, RoleAccessHandler>()
+  .AddSingleton(jwtConfig)
   .AddSingleton<IClock, Clock>()
   .AddSingleton<IPasswordHasher, PasswordHasher>()
   .AddScoped<ITransactionFactory, TransactionFactory>()
@@ -63,6 +98,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHealthChecks("/");
+app.UseAuthentication();
+app.UseMiddleware<AuthMiddleware>();
+app.UseAuthorization();
 app.MapControllers();
 
 // migrate database

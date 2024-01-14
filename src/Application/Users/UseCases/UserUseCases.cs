@@ -1,8 +1,9 @@
-using Domain.Entities.Users;
-using Domain.Entities.Users.Enums;
+using Application.Users.Mappers;
 using Domain.Ports;
-using Domain.Ports.Users;
-using Domain.Ports.Users.Repositories;
+using Domain.Users.Entities;
+using Domain.Users.Enums;
+using Domain.Users.Ports;
+using Domain.Users.Repositories;
 
 namespace Application.Users.UseCases;
 
@@ -11,6 +12,12 @@ public class UserUseCases(
   IPasswordHasher passwordHasher,
   ITransactionFactory transactionFactory)
 {
+  public async Task<API.Users.Models.User> GetById(Guid userId)
+  {
+    var user = await userRepository.GetByPublicId(userId);
+    return UserMapper.Map(user);
+  }
+
   public async Task SeedAdmin(string email, string password)
   {
     using (await transactionFactory.Begin())
