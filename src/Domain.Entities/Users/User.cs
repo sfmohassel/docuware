@@ -10,10 +10,16 @@ public class User : Entity
   {
   }
 
-  public User(string email, string password)
+  public User(string email, string password, IEnumerable<Role> roles)
   {
     Email = email;
     Password = password;
+    UserRoles = roles.Select(role => new UserRole
+    {
+      Role = role,
+      User = this,
+      UserId = Id
+    }).ToList();
 
     Validate();
   }
@@ -21,16 +27,6 @@ public class User : Entity
   public IList<UserRole> UserRoles { get; private set; }
   public string Email { get; private set; }
   public string Password { get; private set; }
-
-  public void SetRoles(IEnumerable<Role> roles)
-  {
-    UserRoles = roles.Select(role => new UserRole
-    {
-      Role = role,
-      User = this,
-      UserId = Id
-    }).ToList();
-  }
 
   public ISet<Role> GetRoles()
   {

@@ -18,8 +18,7 @@ public class UserUseCases(
       var admin = await userRepository.FindByEmail(email);
       if (admin == null)
       {
-        admin = new User(email, await passwordHasher.Hash(password));
-        admin.SetRoles(new[] { Role.EventCreator });
+        admin = new User(email, await passwordHasher.Hash(password), new[] { Role.EventCreator });
         await userRepository.Save(admin);
       }
     }

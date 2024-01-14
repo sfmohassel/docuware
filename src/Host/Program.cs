@@ -65,8 +65,10 @@ if (app.Environment.IsDevelopment())
 app.UseHealthChecks("/");
 app.MapControllers();
 
+// migrate database
 Migrator.Migrate(connectionStringBuilder.ConnectionString);
 
+// ensure one admin user exists in database
 using (var scope = app.Services.CreateScope())
 {
   var userUseCases = scope.ServiceProvider.GetRequiredService<UserUseCases>();
