@@ -6,7 +6,12 @@ namespace Domain.Entities.Events;
 
 public class Registration : Entity
 {
-  public Registration(long eventId, DateTimeOffset registeredAt, string name, string? phone, string? email)
+  public Registration()
+  {
+  }
+
+  public Registration(long eventId, DateTimeOffset registeredAt, string name, string? phone,
+    string? email)
   {
     EventId = eventId;
     RegisteredAt = registeredAt;

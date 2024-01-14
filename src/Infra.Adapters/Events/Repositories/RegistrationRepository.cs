@@ -18,18 +18,18 @@ public class RegistrationRepository(EFContext efContext)
   {
     return efContext.Registrations
       .AnyAsync(reg => reg.EventId == eventId &&
-                       reg.Name.Equals(name, StringComparison.OrdinalIgnoreCase) &&
+                       EF.Functions.ILike(reg.Name, name) &&
                        reg.Phone != null &&
-                       reg.Phone.Equals(phone, StringComparison.OrdinalIgnoreCase));
+                       EF.Functions.ILike(reg.Phone, phone));
   }
 
   public Task<bool> IsRegisteredInEventByEmail(long eventId, string name, string email)
   {
     return efContext.Registrations
       .AnyAsync(reg => reg.EventId == eventId &&
-                       reg.Name.Equals(name, StringComparison.OrdinalIgnoreCase) &&
+                       EF.Functions.ILike(reg.Name, name) &&
                        reg.Email != null &&
-                       reg.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+                       EF.Functions.ILike(reg.Email, email));
   }
 
   public new Task<Registration> Save(Registration registration)

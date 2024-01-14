@@ -9,7 +9,7 @@ public class UserRepository(EFContext efContext) : Repository<User>(efContext), 
 {
   public Task<User?> FindByEmail(string email)
   {
-    return efContext.Users.FirstOrDefaultAsync(user => user.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+    return efContext.Users.FirstOrDefaultAsync(user => EF.Functions.ILike(user.Email, email));
   }
 
   public Task<User?> FindByPublicId(Guid publicId)

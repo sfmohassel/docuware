@@ -11,7 +11,7 @@ public static class EventMapper
       EventId = @event.PublicId,
       Description = @event.Description ?? "",
       End = @event.End.ToUnixTimeMilliseconds(),
-      Location = @event.Location == null ? null : AddressMapper.Map(@event.Location),
+      Location = AddressMapper.Map(@event.Location),
       Name = @event.Name,
       Start = @event.Start.ToUnixTimeMilliseconds()
     };

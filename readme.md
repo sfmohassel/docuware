@@ -4,9 +4,14 @@
 
 .gitignore is created using `dotnet new gitignore` command
 
+## Development Setup
+
+1. Create a copy of `docker/.env.example` and save it in `docker/.env` address after modifying environment values. **DO NOT PUSH `.env` file into source repository.**
+
+2. Create a copy of `src/Host/appsettings.Development.json` and after modifying values, save it in `src/Host/appsettings.Local.json`. **DO NOT PUSH this file into source repository.**
+
 ## Database Control
 
-First create a copy of `docker/.env.example` and save it in `docker/.env` address after modifying environment values.
 
 ### To bring database container UP
 

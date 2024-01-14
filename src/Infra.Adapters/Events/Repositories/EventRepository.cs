@@ -21,7 +21,7 @@ public class EventRepository(EFContext efContext) : Repository<Event>(efContext)
   public Task<bool> AnyUnfinishedEventExistsByName(string name)
   {
     return efContext.Events.AnyAsync(ev =>
-      ev.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+      EF.Functions.ILike(ev.Name, name));
   }
 
   public new Task<Event> Save(Event @event)

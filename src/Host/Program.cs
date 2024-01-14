@@ -14,8 +14,13 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
+if (builder.Environment.IsDevelopment())
+{
+  builder.Configuration.AddJsonFile("appsettings.Local.json", optional: false, reloadOnChange: true);
+}
 var services = builder.Services;
-services.AddEndpointsApiExplorer().AddSwaggerGen();
+services.AddEndpointsApiExplorer().AddSwaggerGen().AddHealthChecks();
+services.AddControllers();
 
 var databaseConfig = builder.Configuration.GetSection("Database").Get<DatabaseConfig>()!;
 var adminConfig = builder.Configuration.GetSection("Admin").Get<AdminConfig>()!;
@@ -39,14 +44,14 @@ services.AddDbContext<EFContext>(o =>
 services
   .AddSingleton<IClock, Clock>()
   .AddSingleton<IPasswordHasher, PasswordHasher>()
-  .AddSingleton<ITransactionFactory, TransactionFactory>()
-  .AddSingleton<UserService>()
-  .AddSingleton<AuthUseCases>()
-  .AddSingleton<UserUseCases>()
-  .AddSingleton<EventUseCases>()
-  .AddSingleton<IUserRepository, UserRepository>()
-  .AddSingleton<IEventRepository, EventRepository>()
-  .AddSingleton<IRegistrationRepository, RegistrationRepository>();
+  .AddScoped<ITransactionFactory, TransactionFactory>()
+  .AddScoped<UserService>()
+  .AddScoped<AuthUseCases>()
+  .AddScoped<UserUseCases>()
+  .AddScoped<EventUseCases>()
+  .AddScoped<IUserRepository, UserRepository>()
+  .AddScoped<IEventRepository, EventRepository>()
+  .AddScoped<IRegistrationRepository, RegistrationRepository>();
 
 var app = builder.Build();
 
@@ -60,7 +65,10 @@ if (app.Environment.IsDevelopment())
 app.UseHealthChecks("/");
 app.MapControllers();
 
-var userUseCases = app.Services.GetRequiredService<UserUseCases>();
-await userUseCases.SeedAdmin(adminConfig.Email, adminConfig.Password);
+using (var scope = app.Services.CreateScope())
+{
+  var userUseCases = scope.ServiceProvider.GetRequiredService<UserUseCases>();
+  await userUseCases.SeedAdmin(adminConfig.Email, adminConfig.Password);
+}
 
 app.Run();

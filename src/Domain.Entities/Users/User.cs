@@ -6,6 +6,10 @@ namespace Domain.Entities.Users;
 
 public class User : Entity
 {
+  public User()
+  {
+  }
+
   public User(string email, string password)
   {
     Email = email;

@@ -8,6 +8,10 @@ namespace Domain.Entities.Events;
 
 public class Event : Entity, ICursor
 {
+  public Event()
+  {
+  }
+
   public Event(long creatorId, string name, DateTimeOffset start, DateTimeOffset end,
     string? description, Address? location)
   {
@@ -16,7 +20,7 @@ public class Event : Entity, ICursor
     Start = start;
     End = end;
     Description = description;
-    Location = location;
+    Location = location ?? new Address();
 
     Validate();
   }
@@ -31,7 +35,7 @@ public class Event : Entity, ICursor
   public DateTimeOffset Start { get; private set; }
   public DateTimeOffset End { get; private set; }
   public string? Description { get; private set; }
-  public Address? Location { get; private set; }
+  public Address Location { get; private set; }
 
   public string Cursor => Id.ToString();
 
