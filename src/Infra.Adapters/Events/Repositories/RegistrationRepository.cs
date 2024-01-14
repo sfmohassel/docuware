@@ -9,9 +9,18 @@ namespace Infra.Adapters.Events.Repositories;
 public class RegistrationRepository(EFContext efContext)
   : Repository<Registration>(efContext), IRegistrationRepository
 {
-  public new Task<IEnumerable<Registration>> FindPaginated(PagedRequest pagedRequest)
+  public new async Task<IEnumerable<Registration>> FindPaginated(PagedRequest pagedRequest)
   {
-    return base.FindPaginated(pagedRequest);
+    var backward = pagedRequest.Backward ?? false;
+    IQueryable<Registration> q = efContext.Registrations;
+    q = backward ? q.OrderByDescending(ev => ev.RegisteredAt) : q.OrderBy(ev => ev.RegisteredAt);
+    if (long.TryParse(pagedRequest.Cursor, out var cursorLong))
+    {
+      var cursor = DateTimeOffset.FromUnixTimeMilliseconds(cursorLong);
+      q = backward ? q.Where(ev => ev.RegisteredAt < cursor) : q.Where(ev => ev.RegisteredAt > cursor);
+    }
+
+    return await q.Take(pagedRequest.PageSize).ToListAsync();
   }
 
   public Task<bool> IsRegisteredInEventByPhone(long eventId, string name, string phone)

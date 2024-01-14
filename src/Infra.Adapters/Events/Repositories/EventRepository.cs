@@ -8,9 +8,18 @@ namespace Infra.Adapters.Events.Repositories;
 
 public class EventRepository(EFContext efContext) : Repository<Event>(efContext), IEventRepository
 {
-  public new Task<IEnumerable<Event>> FindPaginated(PagedRequest pagedRequest)
+  public new async Task<IEnumerable<Event>> FindPaginated(PagedRequest pagedRequest)
   {
-    return base.FindPaginated(pagedRequest);
+    var backward = pagedRequest.Backward ?? false;
+    IQueryable<Event> q = efContext.Events;
+    q = backward ? q.OrderByDescending(ev => ev.Start) : q.OrderBy(ev => ev.Start);
+    if (long.TryParse(pagedRequest.Cursor, out var cursorLong))
+    {
+      var cursor = DateTimeOffset.FromUnixTimeMilliseconds(cursorLong);
+      q = backward ? q.Where(ev => ev.Start < cursor) : q.Where(ev => ev.Start > cursor);
+    }
+
+    return await q.Take(pagedRequest.PageSize).ToListAsync();
   }
 
   public Task<Event?> FindByPublicId(Guid publicId)

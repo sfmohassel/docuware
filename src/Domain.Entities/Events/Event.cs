@@ -1,12 +1,11 @@
 ﻿using Common;
-using Common.CursorPagination;
 using Domain.Entities.Events.Exceptions;
 using Domain.Entities.Events.ValueObjects;
 using EventBuilder = Domain.Entities.Events.Builders.EventBuilder;
 
 namespace Domain.Entities.Events;
 
-public class Event : Entity, ICursor
+public class Event : Entity
 {
   public Event()
   {
@@ -36,8 +35,6 @@ public class Event : Entity, ICursor
   public DateTimeOffset End { get; private set; }
   public string? Description { get; private set; }
   public Address Location { get; private set; }
-
-  public string Cursor => Id.ToString();
 
   private void Validate()
   {

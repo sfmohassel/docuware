@@ -24,7 +24,7 @@ public class EventTypeConfiguration : IEntityTypeConfiguration<Event>
     var locationBuilder = builder.OwnsOne(a => a.Location);
     locationBuilder.Property(a => a.Country).HasColumnName("country").IsFixedLength()
       .HasMaxLength(2).IsRequired(false);
-    locationBuilder.Property(a => a.City).HasColumnName("city").HasMaxLength(64).IsRequired(false);
+    locationBuilder.Property(a => a.City).HasColumnName("city").HasMaxLength(32).IsRequired(false);
     locationBuilder.Property(a => a.PostalCode).HasColumnName("postcode").HasMaxLength(32)
       .IsRequired(false);
     locationBuilder.Property(a => a.StreetAndHouse).HasColumnName("streethouse").HasMaxLength(128)

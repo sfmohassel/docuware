@@ -24,20 +24,20 @@ services.AddControllers();
 
 var databaseConfig = builder.Configuration.GetSection("Database").Get<DatabaseConfig>()!;
 var adminConfig = builder.Configuration.GetSection("Admin").Get<AdminConfig>()!;
+var connectionStringBuilder = new NpgsqlConnectionStringBuilder
+{
+  Username = databaseConfig.User,
+  Password = databaseConfig.Password,
+  Host = databaseConfig.IP,
+  Port = databaseConfig.Port,
+  Pooling = true,
+  MaxPoolSize = 10,
+  MinPoolSize = 1,
+  Database = databaseConfig.Name
+};
 
 services.AddDbContext<EFContext>(o =>
 {
-  var connectionStringBuilder = new NpgsqlConnectionStringBuilder
-  {
-    Username = databaseConfig.User,
-    Password = databaseConfig.Password,
-    Host = databaseConfig.IP,
-    Port = databaseConfig.Port,
-    Pooling = true,
-    MaxPoolSize = 10,
-    MinPoolSize = 1,
-    Database = databaseConfig.Name
-  };
   o.UseNpgsql(connectionStringBuilder.ConnectionString);
 });
 
@@ -64,6 +64,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHealthChecks("/");
 app.MapControllers();
+
+Migrator.Migrate(connectionStringBuilder.ConnectionString);
 
 using (var scope = app.Services.CreateScope())
 {
